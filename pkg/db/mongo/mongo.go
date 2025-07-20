@@ -6,6 +6,7 @@ import (
 	"time"
 	"vk-inter/pkg/logger"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -62,4 +63,17 @@ func (m *MongoDB) Disconnect(ctx context.Context) error {
 	}
 	logs.Debug("MongoDB disconnected")
 	return nil
+}
+
+func (m *MongoDB) CreateIndex(ctx context.Context, collectionName, field string, unique bool) error {
+	collection := m.Database.Collection(collectionName)
+
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: field, Value: 1}},
+		Options: options.Index().SetUnique(unique),
+	}
+
+	_, err := collection.Indexes().CreateOne(ctx, indexModel)
+
+	return err
 }

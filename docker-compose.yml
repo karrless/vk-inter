@@ -1,0 +1,39 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongo_container_medods
+    environment:
+      MONGO_INITDB_DATABASE: ${DBName}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d  # Скрипты инициализации
+    ports:
+      - "${MONGO_EXT_PORT}:${MONGO_PORT}"
+    networks:
+      - default
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  vk-inter-service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vk-inter:latest
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - default
+    ports:
+      - "${REST_PORT}:${REST_PORT}"
+
+volumes:
+  mongo_data:
