@@ -3,12 +3,18 @@ package config
 
 import (
 	"log"
+	"vk-inter/pkg/db/mongo"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+type KeyString string
+
+const ConfigKey KeyString = "config"
+
 // Config
 type Config struct {
+	mongo.MongoConfig
 	Debug bool `env:"DEBUG" env-default:"true"`
 }
 
