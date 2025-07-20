@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"vk-inter/pkg/logger"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +26,6 @@ type MongoDB struct {
 
 // Get new MongoDB instanse
 func New(ctx context.Context, cfg MongoConfig) (*MongoDB, error) {
-	logs := logger.GetLoggerFromCtx(ctx)
 	var uri string
 
 	if cfg.User != "" && cfg.Password != "" {
@@ -36,20 +34,16 @@ func New(ctx context.Context, cfg MongoConfig) (*MongoDB, error) {
 		uri = fmt.Sprintf("mongodb://%s:%d", cfg.Host, cfg.Port)
 	}
 
-	logs.Debug(fmt.Sprintf("mongo.New: the uri to conn is: %s", uri))
-
 	clientOpts := options.Client().ApplyURI(uri).SetConnectTimeout(10 * time.Second)
 
 	client, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
 		return nil, fmt.Errorf("mongo connect error: %w", err)
 	}
-	logs.Debug("mongo.New: connect to db")
 
 	if err := client.Ping(ctx, nil); err != nil {
 		return nil, fmt.Errorf("mongo ping error: %w", err)
 	}
-	logs.Debug("mongo.New: pong")
 
 	db := client.Database(cfg.DBName)
 	return &MongoDB{Client: client, Database: db}, nil
@@ -57,11 +51,9 @@ func New(ctx context.Context, cfg MongoConfig) (*MongoDB, error) {
 
 // Close the MongoDB connection
 func (m *MongoDB) Disconnect(ctx context.Context) error {
-	logs := logger.GetLoggerFromCtx(ctx)
 	if err := m.Client.Disconnect(ctx); err != nil {
 		return fmt.Errorf("mongo disconnect error: %w", err)
 	}
-	logs.Debug("MongoDB disconnected")
 	return nil
 }
 

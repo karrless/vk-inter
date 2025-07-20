@@ -35,6 +35,8 @@ func main() {
 
 	<-graceChannel
 	db.Disconnect(ctx)
+
+	mainLogger.Debug("MongoDB disconnected")
 	mainLogger.Info("Graceful shutdown!")
 
 }
