@@ -13,8 +13,8 @@ import (
 type MongoConfig struct {
 	Host     string `env:"MONGO_HOST" env-default:"127.0.0.1"`
 	Port     int    `env:"MONGO_PORT" env-default:"27017"`
-	User     string `env:"MONGO_USER" env-default:""`
-	Password string `env:"MONGO_PASS" env-default:""`
+	User     string `env:"MONGO_USER" env-default:"admin"`
+	Password string `env:"MONGO_PASS" env-default:"admin"`
 	DBName   string `env:"MONGO_DB" env-default:"vk-inter"`
 }
 
@@ -57,7 +57,7 @@ func (m *MongoDB) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (m *MongoDB) CreateIndex(ctx context.Context, collectionName, field string, unique bool) error {
+func (m *MongoDB) CreateUniqueIndex(ctx context.Context, collectionName, field string, unique bool) error {
 	collection := m.Database.Collection(collectionName)
 
 	indexModel := mongo.IndexModel{
@@ -68,4 +68,42 @@ func (m *MongoDB) CreateIndex(ctx context.Context, collectionName, field string,
 	_, err := collection.Indexes().CreateOne(ctx, indexModel)
 
 	return err
+}
+
+func (m *MongoDB) Collection(name string) *mongo.Collection {
+	return m.Database.Collection(name)
+}
+
+func (m *MongoDB) IsDuplicateKeyError(err error) bool {
+	if we, ok := err.(mongo.WriteException); ok {
+		for _, e := range we.WriteErrors {
+			if e.Code == 11000 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (m *MongoDB) SetupValidation(ctx context.Context, schema bson.M, collectionName string) error {
+	cmd := bson.D{
+		{Key: "collMod", Value: collectionName},
+		{Key: "validator", Value: bson.D{
+			{Key: "$jsonSchema", Value: schema},
+		}},
+		{Key: "validationLevel", Value: "strict"},
+	}
+
+	var result bson.M
+	err := m.Database.RunCommand(ctx, cmd).Decode(&result)
+	if err != nil {
+		return fmt.Errorf("failed to set collection validator: %w", err)
+	}
+
+	// Проверяем успешность выполнения команды
+	if ok, _ := result["ok"].(float64); ok != 1 {
+		return fmt.Errorf("command failed: %v", result)
+	}
+
+	return nil
 }

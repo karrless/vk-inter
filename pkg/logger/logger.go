@@ -16,6 +16,7 @@ type Logger interface {
 	Debug(msg string, fields ...zap.Field)
 	Info(msg string, fields ...zap.Field)
 	Fatal(msg string, fields ...zap.Field)
+	Warn(msg string, fields ...zap.Field)
 }
 
 // logger
@@ -36,6 +37,11 @@ func (l *logger) Info(msg string, fields ...zap.Field) {
 // Fatal message
 func (l *logger) Fatal(msg string, fields ...zap.Field) {
 	l.logger.Fatal(msg, fields...)
+}
+
+// Warn message
+func (l *logger) Warn(msg string, fields ...zap.Field) {
+	l.logger.Warn(msg, fields...)
 }
 
 // Get new logger
@@ -59,6 +65,6 @@ func New(debug bool) Logger {
 	return &logger{logger: zapLogger}
 }
 
-func GetLoggerFromCtx(ctx context.Context) Logger {
+func FromContext(ctx context.Context) Logger {
 	return ctx.Value(LoggerKey).(Logger)
 }

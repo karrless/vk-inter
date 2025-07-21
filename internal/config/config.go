@@ -3,6 +3,7 @@ package config
 
 import (
 	"log"
+	rest "vk-inter/internal/transport"
 	"vk-inter/pkg/db/mongo"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -15,7 +16,9 @@ const ConfigKey KeyString = "config"
 // Config
 type Config struct {
 	mongo.MongoConfig
-	Debug bool `env:"DEBUG" env-default:"true"`
+	rest.RestConfig
+	Debug  bool   `env:"DEBUG" env-default:"true"`
+	Secret string `env:"SECRET" env-default:"test_key"`
 }
 
 // New

@@ -6,9 +6,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"vk-inter/inetrnal/config"
+	"vk-inter/internal/config"
+	"vk-inter/internal/repository"
+	"vk-inter/internal/service"
+	rest "vk-inter/internal/transport"
 	"vk-inter/pkg/db/mongo"
 	"vk-inter/pkg/logger"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -22,17 +27,30 @@ func main() {
 
 	mainLogger := logger.New(cfg.Debug)
 	ctx = context.WithValue(ctx, logger.LoggerKey, mainLogger)
-	mainLogger.Debug("Logger init")
+
+	if cfg.Secret == "test_key" {
+		mainLogger.Warn("Secret key is default. Please, change it before run in production!")
+	}
 
 	db, err := mongo.New(ctx, cfg.MongoConfig)
 	if err != nil {
-		mainLogger.Fatal(err.Error())
+		mainLogger.Fatal("Create MongoDB instanse error", zap.Error(err))
 	}
 	mainLogger.Debug("DB connected")
+
+	authRepo := repository.NewAuthRepo(ctx, db)
+	authService := service.NewAuthService(authRepo, cfg.Secret)
+
+	restServer := rest.New(&ctx, cfg.RestConfig, cfg.Debug, cfg.Secret, authService)
 
 	graceChannel := make(chan os.Signal, 1)
 	signal.Notify(graceChannel, syscall.SIGINT, syscall.SIGTERM)
 
+	go func() {
+		if err := restServer.Run(); err != nil {
+			mainLogger.Fatal("failed to start server", zap.Error(err))
+		}
+	}()
 	<-graceChannel
 	db.Disconnect(ctx)
 

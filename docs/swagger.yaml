@@ -1,0 +1,90 @@
+definitions:
+  controllers.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  controllers.SignUpRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.SignUpResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login and password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.SignUpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Sign up endpoint
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login and password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.SignUpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Sign up endpoint
+      tags:
+      - auth
+swagger: "2.0"

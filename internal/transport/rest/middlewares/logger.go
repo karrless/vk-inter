@@ -17,7 +17,7 @@ func WithLogger(ctx *context.Context) gin.HandlerFunc {
 		duration := time.Since(start)
 		statusCode := c.Writer.Status()
 
-		logger.GetLoggerFromCtx(*ctx).Info("Request",
+		logger.FromContext(*ctx).Info("Request",
 			zap.Int("status", statusCode),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),

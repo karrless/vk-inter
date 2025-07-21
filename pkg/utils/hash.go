@@ -13,7 +13,6 @@ func HashString(str string) (string, error) {
 }
 
 // CheckStirngHash checks if the password is correct
-func CheckStirngHash(str, hash string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(str))
-	return err == nil, err
+func CheckStirngHash(str, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(str))
 }

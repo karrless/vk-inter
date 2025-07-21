@@ -3,21 +3,41 @@ services:
     image: mongo:7
     container_name: mongo_container_vk_inter
     environment:
-      MONGO_INITDB_DATABASE: ${DBName}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
     volumes:
       - mongo_data:/data/db
     ports:
-      - "${MONGO_EXT_PORT}:${MONGO_PORT}"
+      - "${MONGO_EXT_PORT}:27017"
     networks:
       - default
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh -u ${MONGO_USER} -p ${MONGO_PASS} --quiet
       interval: 10s
       retries: 5
-      start_period: 10s
+      start_period: 30s  # Увеличено для инициализации MongoDB
       timeout: 5s
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express_vk_inter
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/${MONGO_DB}?authSource=admin"
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_PASS}
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: "admin"
+      WAIT_FOR_MONGODB: "true"
+      WAIT_FOR_TIMEOUT: "60"
+    ports:
+      - "${ME_PORT}:8081"
+    networks:
+      - default
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   vk-inter-service:
     env_file:
