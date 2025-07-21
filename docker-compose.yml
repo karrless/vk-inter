@@ -1,14 +1,13 @@
 services:
   mongodb:
     image: mongo:7
-    container_name: mongo_container_medods
+    container_name: mongo_container_vk_inter
     environment:
       MONGO_INITDB_DATABASE: ${DBName}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
     volumes:
       - mongo_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d  # Скрипты инициализации
     ports:
       - "${MONGO_EXT_PORT}:${MONGO_PORT}"
     networks:
