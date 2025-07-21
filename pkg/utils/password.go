@@ -1,64 +1,10 @@
 package utils
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"unicode"
 )
-
-type PasswordError struct {
-	Code    ErrorCode
-	Message string
-}
-
-type ErrorCode int
-
-const (
-	ErrTooShort ErrorCode = iota
-	ErrNoMixedCase
-	ErrNoNumber
-	ErrNoSpecialChar
-	ErrContainsLogin
-)
-
-func (e PasswordError) Error() string {
-	return e.Message
-}
-
-func newTooShortError(gotLength int) PasswordError {
-	return PasswordError{
-		Code:    ErrTooShort,
-		Message: fmt.Sprintf("password must contain at least 8 characters (got %d)", gotLength),
-	}
-}
-
-func newNoMixedCaseError() PasswordError {
-	return PasswordError{
-		Code:    ErrNoMixedCase,
-		Message: "password must contain both uppercase and lowercase letters",
-	}
-}
-func newNoNumber() PasswordError {
-	return PasswordError{
-		Code:    ErrNoNumber,
-		Message: "password must contain at least one number",
-	}
-}
-
-func newNoSpecialChar() PasswordError {
-	return PasswordError{
-		Code:    ErrNoSpecialChar,
-		Message: "password must contain at least one special character (!@#$%^&* etc.)",
-	}
-}
-
-func newContainsLogin() PasswordError {
-	return PasswordError{
-		Code:    ErrContainsLogin,
-		Message: "password cannot contain your username",
-	}
-}
 
 // ValidatePassword checks password
 func ValidatePassword(password, login string) error {

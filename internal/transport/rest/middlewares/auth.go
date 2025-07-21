@@ -21,6 +21,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		}
 
 		tokenParts := strings.Split(authHeader, " ")
+
 		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
 			c.Next()
 			return

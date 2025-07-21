@@ -44,6 +44,7 @@ type SignUpResponse struct {
 // @Summary	Sign up endpoint
 // @Tags		auth
 // @Accept		json
+// @Security	BearerAuth
 // @Produce	json
 // @Param		request	body	SignUpRequest	true	"Login and password"
 // @Success	201		{object}	SignUpResponse
@@ -105,6 +106,7 @@ type LogInResponse struct {
 // @Summary	Log in endpoint
 // @Tags		auth
 // @Accept		json
+// @Security	BearerAuth
 // @Produce	json
 // @Param		request	body	LogInRequest	true	"Login and password"
 // @Success	201		{object}	LogInResponse

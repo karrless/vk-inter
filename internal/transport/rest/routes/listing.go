@@ -12,7 +12,7 @@ func ListingRoute(ctx *context.Context, r *gin.RouterGroup, listingService inter
 	listingController := controllers.NewListingController(ctx, listingService, authService)
 	authGroup := r.Group("/listings")
 	{
-		authGroup.GET("/", listingController.CreateListing)
-		authGroup.POST("/", listingController.GetListings)
+		authGroup.POST("/", listingController.CreateListing)
+		authGroup.GET("/", listingController.GetListings)
 	}
 }

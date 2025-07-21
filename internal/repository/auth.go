@@ -103,32 +103,32 @@ func (ar *AuthRepo) SignUp(ctx context.Context, user *models.User) (*models.User
 	return user, nil
 }
 
-func (ar *AuthRepo) CheckUser(ctx context.Context, user *models.User) error {
+func (ar *AuthRepo) CheckUser(ctx context.Context, user *models.User) (string, error) {
 	if err := ar.validate.Struct(user); err != nil {
 		var ve validator.ValidationErrors
 		if errors.As(err, &ve) {
 			for _, fe := range ve {
 				switch fe.Field() {
 				case "Login":
-					return errs.ErrUserNotFound
+					return "", errs.ErrUserNotFound
 				case "Password":
-					return errs.ErrWrongPassword
+					return "", errs.ErrWrongPassword
 				}
 			}
 		}
-		return err
+		return "", err
 	}
 	userMongo, err := ar.GetByLogin(ctx, user.Login)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = utils.CheckStirngHash(user.Password, userMongo.Password)
 	if err != nil {
-		return errs.ErrWrongPassword
+		return "", errs.ErrWrongPassword
 	}
 
-	return nil
+	return userMongo.ID.Hex(), nil
 }
 
 func (ar *AuthRepo) GetByLogin(ctx context.Context, login string) (*models.User, error) {

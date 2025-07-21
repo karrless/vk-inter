@@ -45,7 +45,10 @@ func main() {
 	authRepo := repository.NewAuthRepo(ctx, db)
 	authService := service.NewAuthService(authRepo, cfg.Secret)
 
-	restServer := rest.New(&ctx, cfg.RestConfig, cfg.Debug, cfg.Secret, authService)
+	listingRepo := repository.NewListingRepo(ctx, db)
+	listingService := service.NewListingService(listingRepo)
+
+	restServer := rest.New(&ctx, cfg.RestConfig, cfg.Debug, cfg.Secret, authService, listingService)
 
 	graceChannel := make(chan os.Signal, 1)
 	signal.Notify(graceChannel, syscall.SIGINT, syscall.SIGTERM)

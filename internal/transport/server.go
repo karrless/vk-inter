@@ -25,7 +25,7 @@ type Server struct {
 	r   *gin.Engine
 }
 
-func New(ctx *context.Context, cfg RestConfig, debug bool, secret string, authService interfaces.AuthService) *Server { //listingService interfaces.ListingService
+func New(ctx *context.Context, cfg RestConfig, debug bool, secret string, authService interfaces.AuthService, listingService interfaces.ListingService) *Server {
 	if !debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -46,7 +46,7 @@ func New(ctx *context.Context, cfg RestConfig, debug bool, secret string, authSe
 	docs.SwaggerInfo.Version = "0.1.0"
 
 	routes.AuthRoutes(ctx, r.Group("/"), authService)
-	// routes.ListingRoute(ctx, r.Group("/"), listingService)
+	routes.ListingRoute(ctx, r.Group("/"), listingService, authService)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return &Server{ctx: ctx, cfg: cfg, r: r}

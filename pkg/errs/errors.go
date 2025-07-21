@@ -16,4 +16,11 @@ var (
 	ErrUserNotFound      = errors.New("user not found")
 
 	ErrUnauthorized = errors.New("unauthorized")
+
+	ErrListingInvalidTitle       = errors.New("invalid title format, expected 3-100 chars")
+	ErrListingInvalidDescription = errors.New("invalid description format, expected be 10-5000 chars")
+	ErrListingInvalidImageURL    = errors.New("invalid image URL, expected valid image valid URL")
+	ErrListingInvalidPrice       = errors.New("invalid price, expected decimal with up to 2 decimal places between 0 and 1_000_000_000")
+
+	ErrPriceSorting = errors.New("Max price must be greater then min pirce")
 )

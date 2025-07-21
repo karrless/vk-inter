@@ -14,7 +14,7 @@ import (
 
 type AuthRepo interface {
 	SignUp(ctx context.Context, user *models.User) (*models.User, error)
-	CheckUser(ctx context.Context, user *models.User) error
+	CheckUser(ctx context.Context, user *models.User) (string, error)
 	GetByID(ctx context.Context, userID primitive.ObjectID) (*models.User, error)
 }
 
@@ -45,7 +45,7 @@ func (as *AuthService) LogIn(ctx context.Context, login, password string) (strin
 		Login:    login,
 		Password: password,
 	}
-	err := as.repo.CheckUser(ctx, user)
+	id, err := as.repo.CheckUser(ctx, user)
 	if err != nil {
 		if errors.Is(err, errs.ErrWrongPassword) || errors.Is(err, errs.ErrUserNotFound) {
 			return "", 0, errs.ErrWrongPasswordOrLogin
@@ -53,7 +53,7 @@ func (as *AuthService) LogIn(ctx context.Context, login, password string) (strin
 		return "", 0, err
 	}
 	duration := time.Hour * 48
-	token, err := jwt.NewAccessToken(login, as.secret, duration)
+	token, err := jwt.NewAccessToken(id, as.secret, duration)
 	if err != nil {
 		return "", 0, err
 	}
