@@ -40,7 +40,7 @@ func New(ctx *context.Context, cfg RestConfig, debug bool, secret string, authSe
 
 	r.SetTrustedProxies([]string{"127.0.0.1", cfg.Host})
 	docs.SwaggerInfo.BasePath = "/"
-	docs.SwaggerInfo.Host = cfg.Host + ":" + cfg.Port
+	docs.SwaggerInfo.Host = cfg.Host
 	docs.SwaggerInfo.Title = "VK-Inter API"
 	docs.SwaggerInfo.Description = "API for auth and listings"
 	docs.SwaggerInfo.Version = "0.1.0"
