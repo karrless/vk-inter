@@ -14,4 +14,6 @@ var (
 	ErrUserAlreadyAuth   = errors.New("user already auth")
 	ErrAlreadyLoggedIn   = errors.New("another user is currently logged in")
 	ErrUserNotFound      = errors.New("user not found")
+
+	ErrUnauthorized = errors.New("unauthorized")
 )

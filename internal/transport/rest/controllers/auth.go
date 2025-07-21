@@ -102,12 +102,12 @@ type LogInResponse struct {
 	ExpiresIn int    `json:"expresIn"`
 }
 
-// @Summary	Sign up endpoint
+// @Summary	Log in endpoint
 // @Tags		auth
 // @Accept		json
 // @Produce	json
-// @Param		request	body	SignUpRequest	true	"Login and password"
-// @Success	201		{object}	SignUpResponse
+// @Param		request	body	LogInRequest	true	"Login and password"
+// @Success	201		{object}	LogInResponse
 // @Failure	400		{object}	ErrorResponse
 // @Failure	403		{object}	ErrorResponse
 // @Failure	409		{object}	ErrorResponse

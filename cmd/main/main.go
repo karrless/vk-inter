@@ -1,3 +1,7 @@
+// @securityDefinitions.apikey  BearerAuth
+// @in                          header
+// @name                        Authorization
+// @description                 "Type 'Bearer {access_token}'"
 package main
 
 import (

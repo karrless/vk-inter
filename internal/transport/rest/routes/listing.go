@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListingRoute(ctx *context.Context, r *gin.RouterGroup, listingService interfaces.ListingService) {
-	listingController := controllers.NewListingController(ctx, listingService)
+func ListingRoute(ctx *context.Context, r *gin.RouterGroup, listingService interfaces.ListingService, authService interfaces.AuthService) {
+	listingController := controllers.NewListingController(ctx, listingService, authService)
 	authGroup := r.Group("/listings")
 	{
 		authGroup.GET("/", listingController.CreateListing)
